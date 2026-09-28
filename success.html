@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberPulse.it | Заказ оформлен</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0A0A0F;
+            font-family: 'Inter', sans-serif;
+            color: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .success-container { text-align: center; padding: 40px; }
+        .success-icon { font-size: 80px; margin-bottom: 24px; }
+        h1 { font-size: 32px; margin-bottom: 16px; background: linear-gradient(135deg, #FFFFFF, #6C63FF); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        p { color: rgba(255,255,255,0.7); margin-bottom: 32px; }
+        .btn-primary { background: linear-gradient(135deg, #6C63FF, #4A42D0); border: none; padding: 12px 32px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">✅</div>
+        <h1>Заказ успешно оформлен!</h1>
+        <p>Спасибо за покупку в CyberPulse.it!<br>Наш менеджер свяжется с вами в ближайшее время.</p>
+        <a href="index.html" class="btn-primary">Вернуться в каталог</a>
+    </div>
+<script>const n=new URLSearchParams(location.search).get("order")||sessionStorage.getItem("lastOrder");if(n)document.getElementById("orderNumber").innerHTML=`Номер заказа: <strong>${n}</strong>`;</script></body>
+</html>

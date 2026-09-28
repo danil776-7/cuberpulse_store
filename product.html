@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberPulse.it | Товар</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0A0A0F; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #FFFFFF; line-height: 1.5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo h1 { font-size: 26px; background: linear-gradient(135deg, #FFFFFF, #6C63FF); -webkit-background-clip: text; background-clip: text; color: transparent; cursor: pointer; }
+        .cart-icon { position: relative; cursor: pointer; display: flex; align-items: center; gap: 8px; background: rgba(108, 99, 255, 0.2); padding: 8px 18px; border-radius: 40px; }
+        .cart-count { background: #FF4D4D; border-radius: 20px; padding: 2px 8px; font-size: 12px; }
+        
+        .back-link { color: #6C63FF; text-decoration: none; display: inline-block; margin: 20px 0; cursor: pointer; }
+        
+        .product-container { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin: 40px 0 60px; }
+        @media (max-width: 800px) { .product-container { grid-template-columns: 1fr; gap: 24px; } }
+        
+        .gallery { background: rgba(255,255,255,0.03); border-radius: 24px; padding: 20px; }
+        .main-image { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 40px; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 350px; }
+        .main-image img { max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 12px; }
+        .main-image .fallback { font-size: 120px; }
+        
+        .product-info h1 { font-size: 32px; margin-bottom: 16px; }
+        .product-price { font-size: 32px; font-weight: 700; color: #6C63FF; margin: 20px 0; }
+        .old-price { font-size: 18px; color: rgba(255,255,255,0.4); text-decoration: line-through; margin-left: 12px; }
+        
+        .product-full-desc { color: rgba(255,255,255,0.7); line-height: 1.6; margin: 20px 0; font-size: 15px; }
+        
+        .specs { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; margin: 20px 0; }
+        .specs h3 { margin-bottom: 16px; font-size: 18px; }
+        .specs ul { list-style: none; padding-left: 0; }
+        .specs li { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); font-size: 14px; }
+        .specs li:before { content: "✓"; color: #6C63FF; margin-right: 10px; font-weight: bold; }
+        .specs li:last-child { border-bottom: none; }
+        
+        .btn-add-cart { width: 100%; background: linear-gradient(135deg, #6C63FF, #4A42D0); border: none; padding: 18px; border-radius: 40px; color: white; font-weight: 600; font-size: 18px; cursor: pointer; margin-top: 20px; transition: all 0.3s; }
+        .btn-add-cart:hover { transform: scale(1.02); }
+        
+        .toast { position: fixed; bottom: 30px; right: 30px; left: 30px; max-width: 400px; margin-left: auto; background: #111118; border-left: 4px solid #6C63FF; padding: 12px 20px; border-radius: 12px; z-index: 1100; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .not-found { text-align: center; padding: 100px 20px; }
+        .not-found h2 { font-size: 28px; margin-bottom: 16px; }
+        .not-found a { color: #6C63FF; text-decoration: none; font-size: 16px; }
+        
+        @media (max-width: 768px) {
+            .product-info h1 { font-size: 24px; }
+            .product-price { font-size: 26px; }
+            .main-image { min-height: 250px; padding: 20px; }
+            .main-image img { max-height: 300px; }
+            .main-image .fallback { font-size: 80px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo" onclick="location.href='index.html'">
+            <h1>CyberPulse.it</h1>
+        </div>
+        <div class="cart-icon" id="cartIcon">
+            🛒 <span class="cart-count" id="cartCount">0</span>
+        </div>
+    </div>
+
+    <div class="back-link" onclick="location.href='index.html'">← Вернуться в каталог</div>
+
+    <div id="productContainer"></div>
+</div>
+
+<script>
+let product=null,cart=JSON.parse(localStorage.getItem('cart')||'[]'),currency='USD',rubRate=92;const $=id=>document.getElementById(id);const esc=s=>{const d=document.createElement('div');d.textContent=s??'';return d.innerHTML};
+async function init(){const id=Number(new URLSearchParams(location.search).get('id'));if(!id)return notFound();try{let r=await fetch(`/api/products/${id}`);if(!r.ok)return notFound();product=await r.json();render();try{let x=await fetch('https://api.exchangerate-api.com/v4/latest/USD');let d=await x.json();if(d.rates?.RUB)rubRate=d.rates.RUB}catch{}}catch{notFound()}}
+function notFound(){$('productContainer').innerHTML='<div class="not-found"><h2>Товар не найден</h2><a href="index.html">Вернуться в каталог</a></div>'}
+function render(){document.title=`${product.name} — CyberPulse.it`;$('productImage').src='/static/'+product.img;$('productImage').alt=product.name;$('productName').textContent=product.name;$('productDesc').textContent=product.fullDesc||product.desc;$('productSpecs').innerHTML=(product.specs||[]).map(x=>`<li>${esc(x)}</li>`).join('');let max=product.price_usd_max?` – $${product.price_usd_max}`:'';$('productPrice').textContent=`$${product.price_usd}${max}`}
+$('addToCartBtn').onclick=()=>{if(!product)return;let x=cart.find(i=>i.id===product.id);x?x.quantity++:cart.push({id:product.id,quantity:1});localStorage.setItem('cart',JSON.stringify(cart));showToast('✓ Добавлено в корзину','#4ADE80')};function showToast(m,c){let t=document.createElement('div');t.className='toast';t.style.borderLeftColor=c;t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2500)}init();
+</script>
+</body>
+</html>
